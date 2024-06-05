@@ -9,7 +9,7 @@ SdFile root;
 const int chipSelect = 10;
 
 void setup() {
-  //power.setSystemPrescaler(PRESCALER_2);
+  power.setSystemPrescaler(PRESCALER_2);
 
   Serial.begin(115200);
   Serial.print("\nInitializing SD card...");
@@ -71,4 +71,32 @@ void setup() {
 }
 
 void loop(void) {
+  delay(1000);
+  File dataFile = SD.open("test.txt", FILE_WRITE);
+    String dataString = "Hello from RobotClass";
+
+    if (dataFile) {
+        // записываем строку в файл
+        dataFile.println(dataString);
+        dataFile.close();
+        Serial.println("Success!");
+    } else {
+        // выводим ошибку если не удалось открыть файл
+        Serial.println("error opening file");
+    }
+
+    Serial.println("Read test.txt");
+
+    File myFile = SD.open("test.txt");
+    if (myFile) {
+        // считываем все байты из файла и выводим их в COM-порт
+        while (myFile.available()) {
+            Serial.write(myFile.read());
+        }
+        // закрываем файл
+        myFile.close();
+    } else {
+        // выводим ошибку если не удалось открыть файл
+        Serial.println("error opening test.txt");
+    }
 }

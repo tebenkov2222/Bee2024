@@ -1,0 +1,37 @@
+version: "3"
+
+name: bee_rabbitmq050524
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.10.7-management
+    hostname: rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=Qwerty!1
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 2147483648
+    ports:
+      - 15672:15672
+      - 5672:5672
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+  postgres:
+    image: postgres:15.6-bullseye
+    volumes:
+      - ./pg/database.sql:/app/database.sql
+      - ./pg/database.sql:/docker-entrypoint-initdb.d/database.sql
+      - ./pg/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: kAsd289vmo4
+    ports:
+      - 5032:5432
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: kAsd289vmo4
+    ports:
+      - 5033:80
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
