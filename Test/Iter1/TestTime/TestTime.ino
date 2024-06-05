@@ -17,14 +17,15 @@ void setup()
 // Установка времени
   rtc.setClockMode(false);
 
-  rtc.setHour(23);
-  rtc.setMinute(0);
-  rtc.setSecond(0);
-  
-  rtc.setDate(10);
-  rtc.setMonth(3);
-  rtc.setYear(1976); //костыль. хз почему то это 2024 год
-  
+  if(true){
+    rtc.setHour(17);
+    rtc.setMinute(8);
+    rtc.setSecond(0);
+    
+    rtc.setDate(26);
+    rtc.setMonth(5);
+    rtc.setYear(1976); //костыль. хз почему то это 2024 год
+  }
 }
 void loop()
 {
@@ -41,6 +42,7 @@ void loop()
   Serial.print(now.minute(), DEC);
   Serial.print(':');
   Serial.print(now.second(), DEC);
+  Serial.print(';');
   Serial.println();
 
   delay (1000);                        // Задержка в одну секунду

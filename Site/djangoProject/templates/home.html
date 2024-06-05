@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <h2>Welcome, {{ user.username }}!</h2>
+    
+    {% if user.is_authenticated %}
+        {% if not user.is_superuser %}
+            <a href="{% url 'add_controller' %}">
+                <button type="button">Добавить контроллер</button>
+            </a>
+        {% else %}
+            <p>Вы администратор и не можете добавлять контроллеры.</p>
+        {% endif %}
+    {% else %}
+        <p>Пожалуйста, <a href="{% url 'login' %}">войдите</a>.</p>
+    {% endif %}
+{% endblock %}
