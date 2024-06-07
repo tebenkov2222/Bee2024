@@ -18,3 +18,8 @@ class ControllerForm(forms.ModelForm):
         widgets = {
             'connection_pass': forms.PasswordInput(),
         }
+
+class ControllerRegistrationForm(forms.ModelForm):
+    class Meta:
+        model = Controller
+        fields = ['imai']

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Мои Контроллеры{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center my-4">Мои Контроллеры</h2>
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8">
+            {% if data %}
+                <div class="row">
+                    {% for item in data %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Apiary {{ forloop.counter }}</h5>
+                                    <p>IMEI: {{ item.controller.imai }}</p>
+                                    <p>Temp: {{ item.latest_record.temperature }}°C</p>
+                                    <p>Hum: {{ item.latest_record.humidity }}%</p>
+                                    <p>Mass: {{ item.latest_record.weight }}kg</p>
+                                    <p>Delta Mass: {{ item.delta_mass }}kg</p>
+                                    <p>Mic Status: Normal</p>
+                                    <a href="{% url 'controller_details' item.controller.id %}" class="btn btn-primary">More details</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center">У вас нет контроллеров.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

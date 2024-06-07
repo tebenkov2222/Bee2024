@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Добавить контроллер{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h2 class="text-center my-4">Регистрация контроллера</h2>
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary btn-block">Добавить</button>
+                </form>
+                {% if messages %}
+                    <div class="messages mt-3">
+                        <ul class="list-group">
+                            {% for message in messages %}
+                                <li class="list-group-item {% if message.tags %}alert alert-{{ message.tags }}{% endif %}">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                {% if form.errors %}
+                    <div class="messages mt-3">
+                        <ul class="list-group">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li class="list-group-item alert alert-danger">{{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li class="list-group-item alert alert-danger">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

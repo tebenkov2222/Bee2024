@@ -17,7 +17,7 @@ services:
     volumes:
       - ./rabbitmq:/var/lib/rabbitmq
   postgres:
-    image: postgres:15.6-bullseye
+    image: postgres:15.7
     volumes:
       - ./pg/database.sql:/app/database.sql
       - ./pg/database.sql:/docker-entrypoint-initdb.d/database.sql

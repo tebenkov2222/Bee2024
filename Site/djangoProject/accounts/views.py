@@ -1,14 +1,21 @@
+from datetime import datetime, timedelta
+from decimal import Decimal
+
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import render, redirect
+import string
+import random
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+from django.shortcuts import render, redirect, get_object_or_404
 
 from accounts.forms import SignUpForm
 
 from django.contrib.auth.decorators import login_required
-from accounts.forms import ControllerForm
-from accounts.models import Controller
+from accounts.forms import ControllerForm, ControllerRegistrationForm
+from accounts.models import Controller, Record
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 
 from django.contrib.auth import logout
 #@login_required
@@ -58,7 +65,7 @@ def logout_view(request):
 def add_controller(request):
     if request.user.is_superuser:
         messages.error(request, 'Администратору не разрешено добавлять контроллеры.')
-        return redirect('home')
+        return redirect('registration_controller')
 
     if request.method == 'POST':
         form = ControllerForm(request.POST)
@@ -72,8 +79,8 @@ def add_controller(request):
 
                 print(f"controller.user = {controller.user}")
                 # Проверка пароля
-                if controller.password == password:
-                    if controller.user is None or controller.user is "":
+                if controller.connection_pass == password:
+                    if controller.user is None or controller.user == "":
                         # Привязка пользователя к контроллеру
                         controller.user = request.user
                         controller.save()
@@ -91,3 +98,71 @@ def add_controller(request):
         form = ControllerForm()
 
     return render(request, 'accounts/add_controller.html', {'form': form})
+
+
+
+@login_required
+def registration_controller(request):
+    if not request.user.is_superuser:
+        messages.error(request, 'Пользователям не разрешено добавлять контроллеры.')
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = ControllerRegistrationForm(request.POST)
+        if form.is_valid():
+            imai = form.cleaned_data['imai']
+
+            # Генерация случайного пароля из 8 символов
+            password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+
+            # Проверка, существует ли контроллер с таким IMEI
+            if Controller.objects.filter(imai=imai).exists():
+                form.add_error('imai', 'Контроллер с таким IMEI уже существует.')
+            else:
+                # Создание нового контроллера
+                Controller.objects.create(imai=imai, connection_pass=password)
+                messages.success(request, f'Новый контроллер успешно добавлен. Сгенерированный пароль: {password}')
+        else:
+            print(form.errors)
+    else:
+        form = ControllerRegistrationForm()
+
+    return render(request, 'accounts/registration_controller.html', {'form': form})
+
+@login_required
+def user_controllers(request):
+    user = request.user
+    controllers = Controller.objects.filter(user=user)
+    data = []
+    one_day_ago = datetime.now() - timedelta(days=6)
+
+    for controller in controllers:
+        latest_record = \
+            Record.objects.filter(controller=controller, timestamp__gte=one_day_ago).order_by('-timestamp').first()
+        if latest_record:
+            data.append({
+                'controller': controller,
+                'latest_record': latest_record,
+                'delta_mass': round((latest_record.weight) - 50, 2)  # Assuming 50 as a reference weight for demo
+            })
+
+    return render(request, 'accounts/user_controllers.html', {'data': data})
+
+@login_required
+def controller_details(request, controller_id):
+    one_day_ago = datetime.now() - timedelta(days=6)
+    controller = get_object_or_404(Controller, id=controller_id, user=request.user)
+    records = Record.objects.filter(controller=controller, timestamp__gte=one_day_ago).values(
+        'timestamp', 'temperature', 'humidity', 'weight', 'voltage'
+    )
+    serialized_records = [
+        {
+            'timestamp': record['timestamp'].isoformat(),
+            'temperature': float(record['temperature']),
+            'humidity': float(record['humidity']),
+            'weight': float(record['weight']),
+            'voltage': float(record['voltage']),
+        }
+        for record in records
+    ]
+    return render(request, 'accounts/controller_details.html', {'controller': controller, 'records': serialized_records})

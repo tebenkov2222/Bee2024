@@ -1,0 +1,49 @@
+/* styles.css */
+
+/* Дополнительные стили поверх Bootstrap */
+body {
+    background-color: #f4f4f4;
+}
+
+h2 {
+    color: #444;
+}
+
+/* Хедер */
+header .navbar-brand {
+    font-weight: bold;
+}
+
+/* Сообщения */
+.messages {
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.messages .alert {
+    margin: 5px 0;
+}
+
+/* Форма логина */
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+form input[type="text"], form input[type="password"], form button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+form input[type="text"], form input[type="password"] {
+    padding-left: 10px;
+}
+
+div.form-group{
+    width: 100%;
+}

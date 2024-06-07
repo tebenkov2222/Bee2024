@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 class Controller(models.Model):
     imai = models.CharField(max_length=50, null=False, name='imai')
     connection_pass = models.CharField(max_length=128, null=False, default='default_password', name='connection_pass')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='controllers')
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, related_name='controllers')
 
     class Meta:
         db_table = 'controllers'  # Указываем имя таблицы

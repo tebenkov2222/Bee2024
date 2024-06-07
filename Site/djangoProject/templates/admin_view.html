@@ -1,10 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin View</title>
-</head>
-<body>
-    <h2>Admin Only</h2>
-    <p>Welcome, Admin!</p>
-</body>
-</html>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Admin View{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h2 class="text-center my-4">Admin Only</h2>
+        <p class="text-center">Welcome, Admin!</p>
+    </div>
+{% endblock %}

@@ -1,19 +1,33 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <h2>Welcome, {{ user.username }}!</h2>
-    
-    {% if user.is_authenticated %}
-        {% if not user.is_superuser %}
-            <a href="{% url 'add_controller' %}">
-                <button type="button">Добавить контроллер</button>
-            </a>
+    <div class="container text-center">
+        {% if user.is_authenticated %}
+            <h2>Welcome, {{ user.username }}!</h2>
+            {% if not user.is_superuser %}
+                <div class="my-4">
+                    <a class="btn btn-success" href="{% url 'add_controller' %}">Добавить контроллер</a>
+                </div>
+                <div class="my-4">
+                    <a class="btn btn-success" href="{% url 'user_controllers' %}">Мои контроллеры</a>
+                </div>
+            {% else %}
+                <p>Вы администратор</p>
+                <div class="text-center my-4">
+                    <a class="btn btn-primary mx-2" href="{% url 'registration_controller' %}">Зарегистрировать новый контроллер</a>
+                </div>
+            {% endif %}
         {% else %}
-            <p>Вы администратор и не можете добавлять контроллеры.</p>
+            <h2>Пожалуйста, войдите или зарегистрируйтесь</h2>
         {% endif %}
-    {% else %}
-        <p>Пожалуйста, <a href="{% url 'login' %}">войдите</a>.</p>
+    </div>
+    {% if not user.is_authenticated%}
+        <div class="text-center my-4">
+            <a class="btn btn-primary mx-2" href="{% url 'login' %}">Login</a>
+            <a class="btn btn-secondary mx-2" href="{% url 'signup' %}">Sign Up</a>
+        </div>
     {% endif %}
 {% endblock %}
