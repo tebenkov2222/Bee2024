@@ -1,8 +1,9 @@
 #include <SoftwareSerial.h>
 
-SoftwareSerial mySerial(7, 8);
+SoftwareSerial mySerial(8, 7);
 
 #include <Wire.h>
+#include <Adafruit_INA219.h>
 #include <DS3231.h>
 DateTime now;
 
@@ -15,7 +16,7 @@ RTClib myRTC;
 #define DHTPIN1 5
 DHT dht1(DHTPIN1, DHT22);
 
-#define DHTPIN2 4
+#define DHTPIN2 6
 DHT dht2(DHTPIN2, DHT22);
 
 float h1;
@@ -30,7 +31,7 @@ const int LOADCELL_DOUT_PIN = 15;
 const int LOADCELL_SCK_PIN = 14;
 
 long zero = -27500;
-float scaler = -28.7916; //-15.769
+float scaler = -20.7671; //-15.769 // -28.7916
 long reading = 0;
 float mass = 0;
 
@@ -52,11 +53,22 @@ String res = "";
 String fileName = "";
 
 unsigned long currentCheckDataTime = 0;
-unsigned long checkDataTime = 60000;
+//unsigned long checkDataTime = 600000;
+unsigned long checkDataTime = 12000;
 //int checkDataTime = 2000;
 unsigned long currentCheckButtonTime = 0;
-float voltage = 0;
-float voltageSolar = 0;
+
+float busvoltage_main;
+float current_mA_main;
+float power_mW_main;
+
+float busvoltage_solar;
+float current_mA_solar;
+float power_mW_solar;
+
+int signal;
+int response_pass;
+int response_transmit;
 
 const char dot = '.';
 const char comma = ',';
@@ -64,6 +76,9 @@ const char colon = ':';
 const char semicolon = ';';
 const char boxOpen = '[';
 const char boxClose = ']';
+
+Adafruit_INA219 ina219(0x44);
+Adafruit_INA219 ina231(0x40);
 
 void initOled(){
   oled.init();        // инициализация
@@ -90,6 +105,14 @@ void initMic(){
   sbi(ADCSRA, ADPS0);
 }
 
+void initIna(){
+  if (!ina219.begin()) {
+      Serial.println("Не удалось найти INA219 чип");
+  }
+  if (!ina231.begin()) {
+      Serial.println("Не удалось найти INA231 чип");
+  }
+}
 void setup() {
   power.setSystemPrescaler(PRESCALER_2);
   pinMode(BTN, INPUT); 
@@ -101,10 +124,12 @@ void setup() {
   Serial.println("Start progam");
 
   mySerial.begin(9600);
+  //mySerial.println("Hello world from Serial2!");
 
   initOled();
   initRtc();
   initDht();
+  initIna();
 
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
 
@@ -112,7 +137,12 @@ void setup() {
   oled.clear();
   //testOled();
 
+  oled.home();        // курсор в 0,0
+  oled.print("Загрузка...");
   //currentDeltaMillis = getDeltaMillis();
+  delay(5000);
+  oled.clear();
+
   readAllData();
   writeAllData();
 }
@@ -135,6 +165,7 @@ String getTimeNow(){
 
 void loop() {
 
+  checkResult();
   CheckButton();
   ViewDataOnDisplay();
   if(millis() < currentCheckDataTime)
@@ -149,6 +180,43 @@ void loop() {
   Serial.println("WRITE DATA");
 
   writeAllData();
+}
+
+
+const char enter = 13;
+const int chipSelect = 4;
+int iter = 0;
+bool isStarted;
+String inputLine;
+
+void checkResult(){
+  if (mySerial.available()) {
+    char input = mySerial.read();
+    if(input == enter){
+      if(isStarted){
+        if (iter == 0){
+          signal = inputLine.toInt();
+        }
+        if (iter == 1){
+          response_pass = inputLine.toInt();
+        }
+        if (iter == 2){
+          response_transmit = inputLine.toInt();
+          isStarted = false;
+        }
+        iter++;
+      }
+      if(inputLine == "!"){
+        iter = 0;
+        isStarted = true;
+      }
+      inputLine = "";
+    }
+    else{
+      if(input != 10)
+        inputLine += input;
+    }
+  }
 }
 
 void writeAllData(){
@@ -166,9 +234,29 @@ void writeAllData(){
   mySerial.print(semicolon);
   mySerial.print(t1);
   mySerial.print(semicolon);
+  mySerial.print(h2);
+  mySerial.print(semicolon);
+  mySerial.print(t2);
+  mySerial.print(semicolon);
   mySerial.print(mass);
   mySerial.print(semicolon);
-  mySerial.print(voltage);
+  mySerial.print(busvoltage_main);
+  mySerial.print(semicolon);
+  mySerial.print(current_mA_main);
+  mySerial.print(semicolon);
+  mySerial.print(power_mW_main);
+  mySerial.print(semicolon);
+  mySerial.print(busvoltage_solar);
+  mySerial.print(semicolon);
+  mySerial.print(current_mA_solar);
+  mySerial.print(semicolon);
+  mySerial.print(power_mW_solar);
+  mySerial.print(semicolon);
+  mySerial.print(signal);
+  mySerial.print(semicolon);
+  mySerial.print(response_pass);
+  mySerial.print(semicolon);
+  mySerial.print(response_transmit);
   mySerial.print(semicolon);
   mySerial.print(boxOpen);
 
@@ -209,7 +297,6 @@ void writeAllData(){
 
 void readAllData(){
   now = myRTC.now();
-  voltage = analogRead(A7) / 1023.0 * 5.0;
   Serial.println("READ DHT");
   
   readDhtData();
@@ -218,6 +305,7 @@ void readAllData(){
   readMass(); 
   Serial.println("READ MIC");
 
+  readIna();
   analyzeSampleAudio();
 }
 
@@ -234,6 +322,37 @@ void readMass(){
   float res = (float)(reading - zero) / scaler;
   
   mass = (res)/1000.0;
+}
+
+void readIna(){
+  busvoltage_main = 0;
+  current_mA_main = 0;
+  power_mW_main = 0;
+  float busV = ina219.getShuntVoltage_mV();
+  busvoltage_main = ina219.getBusVoltage_V();
+  current_mA_main = ina219.getCurrent_mA();
+  power_mW_main = ina219.getPower_mW();
+
+  Serial.println("Akk");
+  Serial.print("Шунт. Напряжение:   "); Serial.print(busV); Serial.println(" мВ");
+  Serial.print("Напряжение на шине: "); Serial.print(busvoltage_main); Serial.println(" В");
+  Serial.print("Ток:                "); Serial.print(current_mA_main); Serial.println(" мА");
+  Serial.print("Мощность:           "); Serial.print(power_mW_main); Serial.println(" мВт");
+  Serial.println("");
+  busvoltage_solar = 0;
+  current_mA_solar = 0;
+  power_mW_solar = 0;
+  float busVS = ina231.getShuntVoltage_mV();
+  busvoltage_solar = ina231.getBusVoltage_V();
+  current_mA_solar = ina231.getCurrent_mA();
+  power_mW_solar = ina231.getPower_mW();
+
+  
+  Serial.println("Solar");
+  Serial.print("Шунт. Напряжение:   "); Serial.print(busVS); Serial.println(" мВ");
+  Serial.print("Напряжение на шине: "); Serial.print(busvoltage_solar); Serial.println(" В");
+  Serial.print("Ток:                "); Serial.print(current_mA_solar); Serial.println(" мА");
+  Serial.print("Мощность:           "); Serial.print(power_mW_solar); Serial.println(" мВт");
 }
 
 void analyzeSampleAudio() {
@@ -280,12 +399,15 @@ void ViewDataOnDisplay(){
     else if(currentIndex == 2){
       ViewSlide2();
     }
-    /*else if(currentIndex == 3){
+    else if(currentIndex == 3){
       ViewSlide3();
-    }*/
-    /*else if (currentIndex == 4){
+    }
+    else if(currentIndex == 4){
       ViewSlide4();
-    }*/
+    }
+    else if(currentIndex == 5){
+      ViewSlide5();
+    }
     else{
       currentIndex = 0;
       oled.clear();
@@ -372,22 +494,60 @@ void ViewSlide2(){
 
 void ViewSlide3(){
   oled.clear();
-  oled.setCursorXY(0, 0);
-  oled.setScale(2);   // масштаб текста (1..4)
-  oled.print("Напряжение");
+  oled.setCursorXY(10, 0);
 
-  oled.setScale(3);   // масштаб текста (1..4)
-  oled.setCursorXY(0, 30);
-  oled.print(voltage);
+  oled.setScale(2);   // масштаб текста (1..4)
+  oled.print("Аккум");
+
+  oled.setCursorXY(7, 17);
+  oled.print("Напр");
+
+  oled.setCursorXY(64, 17);
+  oled.print("Ток,ма");
+
+  oled.setScale(2);   // масштаб текста (1..4)
+  oled.setCursorXY(0, 45);
+  oled.print(busvoltage_main,1);
+  oled.setScale(2);   // масштаб текста (1..4)
+  oled.setCursorXY(64, 45);
+  oled.print(current_mA_main,0);
 }
 
 void ViewSlide4(){
   oled.clear();
-  oled.setCursorXY(0, 0);
-  oled.setScale(2);   // масштаб текста (1..4)
-  oled.print("Напряжение СБ");
+  oled.setCursorXY(10, 0);
 
-  oled.setScale(3);   // масштаб текста (1..4)
-  oled.setCursorXY(0, 30);
-  oled.print(voltageSolar);
+  oled.setScale(2);   // масштаб текста (1..4)
+  oled.print("Солн панель");
+
+  oled.setCursorXY(7, 17);
+  oled.print("Напр");
+
+  oled.setCursorXY(64, 17);
+  oled.print("Ток,ма");
+
+  oled.setScale(2);   // масштаб текста (1..4)
+  oled.setCursorXY(0, 45);
+  oled.print(busvoltage_solar,1);
+  oled.setScale(2);   // масштаб текста (1..4)
+  oled.setCursorXY(64, 45);
+  oled.print(current_mA_solar, 0);
+}
+
+void ViewSlide5(){
+  oled.clear();
+  oled.setCursorXY(10, 0);
+
+  oled.setScale(2);   // масштаб текста (1..4)
+  oled.print("Sim");
+
+  oled.setCursorXY(55, 17);
+  oled.print(signal);
+
+  oled.setScale(2);   // масштаб текста (1..4)
+  oled.setCursorXY(0, 45);
+  oled.print(response_pass);
+  oled.setScale(2);   // масштаб текста (1..4)
+  oled.setCursorXY(64, 45);
+  oled.print(response_transmit);
 }

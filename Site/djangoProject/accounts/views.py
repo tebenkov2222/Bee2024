@@ -1,12 +1,9 @@
 from datetime import datetime, timedelta
-from decimal import Decimal
 
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 import string
 import random
-import json
-from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render, redirect, get_object_or_404
 
 from accounts.forms import SignUpForm

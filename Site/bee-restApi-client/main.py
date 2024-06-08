@@ -3,7 +3,7 @@ import requests
 import schedule
 import time
 from dotenv import load_dotenv
-
+from itertools import cycle
 # Загрузка переменных окружения из файла .env
 load_dotenv()
 
@@ -17,7 +17,11 @@ getpass_url = f'{url}/getpass'
 # Переменная для хранения пароля
 password = None
 
-
+def load_records(file_path):
+    global records_iterator
+    with open(file_path, 'r') as file:
+        records = file.readlines()
+    records_iterator = cycle(records)
 # Функция для получения пароля
 def fetch_password():
     global password
@@ -36,7 +40,8 @@ def send_data():
         print("Password is not set. Cannot send data.")
         return
 
-    records = "0:0:19;35.10;19.60;62.05;5.00;[27,19,0,19,19,19,0,30,19,19,19,19,19,19,0,8];"
+    #records = "0:0:19;35.10;19.60;62.05;5.00;[27,19,0,19,19,19,0,30,19,19,19,19,19,19,0,8];"
+    records = next(records_iterator).strip()
     data = {
         'login': login,
         'password': password,
@@ -60,6 +65,7 @@ schedule.every(1).minutes.do(get_pass_and_send_data)
 
 print("Client started. Sending data every 10 minutes.")
 
+load_records('data.txt')
 get_pass_and_send_data()
 # Бесконечный цикл для выполнения задач по расписанию
 

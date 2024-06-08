@@ -1,0 +1,49 @@
+name: bee_rabbitmq050524
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.10.7-management
+    hostname: rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=hhP2CidKeK^Y6
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 2147483648
+    ports:
+      - 7670:15672
+      - 7671:5672
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+  postgres:
+    image: postgres:15.7
+    volumes:
+      - ./pg/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: hhP2CidKeK^Y6
+    ports:
+      - 7672:5432
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: hhP2CidKeK^Y6
+    ports:
+      - 7673:80
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
+  restapi:
+    image: tebenkov2222/bee-restapi:1.0
+    volumes:
+      - ./.env:/app/.env
+    ports:
+      - 7674:5001
+  rmq-to-pg:
+    image: tebenkov2222/bee-rmq-to-pg:1.1
+    volumes:
+      - ./.env:/app/.env
+  django:
+    image: tebenkov2222/bee-django:1.0
+    volumes:
+      - ./.env:/app/.env
+    ports:
+      - 7675:8000
