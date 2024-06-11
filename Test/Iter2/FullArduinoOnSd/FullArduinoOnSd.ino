@@ -31,7 +31,7 @@ const int LOADCELL_DOUT_PIN = 15;
 const int LOADCELL_SCK_PIN = 14;
 
 long zero = -27500;
-float scaler = -20.7671; //-15.769 // -28.7916
+float scaler = -20.1671; //-15.769 // -28.7916
 long reading = 0;
 float mass = 0;
 
@@ -53,8 +53,8 @@ String res = "";
 String fileName = "";
 
 unsigned long currentCheckDataTime = 0;
-//unsigned long checkDataTime = 600000;
-unsigned long checkDataTime = 12000;
+unsigned long checkDataTime = 600000;
+//unsigned long checkDataTime = 12000;
 //int checkDataTime = 2000;
 unsigned long currentCheckButtonTime = 0;
 
@@ -140,7 +140,7 @@ void setup() {
   oled.home();        // курсор в 0,0
   oled.print("Загрузка...");
   //currentDeltaMillis = getDeltaMillis();
-  delay(5000);
+  delay(10000);
   oled.clear();
 
   readAllData();

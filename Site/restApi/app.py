@@ -73,11 +73,11 @@ def transmitdata_route():
 
     if password in available_passwords or True:
     #if len(login) > 0:
+
+        send_to_rabbitmq(login, records)
         available_passwords.remove(password)
 
-
         # Отправка логина и записей в RabbitMQ
-        send_to_rabbitmq(login, records)
 
         return "Data received and printed in console, and sent to RabbitMQ", 200
     else:

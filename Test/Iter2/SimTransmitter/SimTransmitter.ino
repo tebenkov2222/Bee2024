@@ -69,6 +69,11 @@ void loop() {
         else{
           data = String(inputLine);
           isStarted = false;
+          signal = getSignalStrength();
+          delay(1000);
+          signal = getSignalStrength();
+          delay(1000);
+          
           sendData(data);
           sendResultToBase();
         }
@@ -192,7 +197,8 @@ void initModule() {
 }
 
 void connectToInternet() {
-  signal = getSignalStrength();
+
+
   sendATCommand("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"", 2000, true);
   sendATCommand("AT+SAPBR=3,1,\"APN\",\"" + apn + "\"", 2000, true);
   sendATCommand("AT+SAPBR=3,1,\"USER\",\"" + user + "\"", 2000, true);
