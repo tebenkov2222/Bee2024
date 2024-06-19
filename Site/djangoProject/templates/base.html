@@ -5,7 +5,7 @@
     <title>{% block title %}My Site{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
-       <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicon-16x16.png' %}">
     <link rel="manifest" href="{% static 'img/site.webmanifest' %}">
@@ -18,7 +18,11 @@
 <header class="bg-dark text-white py-2">
     <div class="container">
         <nav class="navbar navbar-dark">
-            <a class="navbar-brand" href="{% url 'home' %}">Bee Project</a>
+
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+                <img src="{% static 'img/favicon-32x32.png' %}" alt="Bee Project Logo" class="navbar-logo">
+                <span class="ml-2 navbar-title">Bee Project</span>
+            </a>
             {% if user.is_authenticated %}
                 <div class="justify-content-end" id="navbarNav">
                     <ul class="navbar-nav">
