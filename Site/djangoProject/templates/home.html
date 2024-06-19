@@ -3,16 +3,22 @@
 
 {% block title %}Home{% endblock %}
 
+{% block main_classes %}
+{% if not user.is_authenticated %}
+center-content
+{% else %}
+main-center
+{% endif %}
+{% endblock %}
+
 {% block content %}
     <div class="container text-center">
         {% if user.is_authenticated %}
             <h2>Welcome, {{ user.username }}!</h2>
             {% if not user.is_superuser %}
                 <div class="my-4">
-                    <a class="btn btn-success" href="{% url 'add_controller' %}">Добавить контроллер</a>
-                </div>
-                <div class="my-4">
-                    <a class="btn btn-success" href="{% url 'user_controllers' %}">Мои контроллеры</a>
+                    <a class="btn btn-success mb-2 d-block mx-auto" style="max-width: 300px;" href="{% url 'add_controller' %}">Добавить контроллер</a>
+                    <a class="btn btn-success d-block mx-auto" style="max-width: 300px;" href="{% url 'user_controllers' %}">Мои контроллеры</a>
                 </div>
             {% else %}
                 <p>Вы администратор</p>
@@ -22,12 +28,10 @@
             {% endif %}
         {% else %}
             <h2>Пожалуйста, войдите или зарегистрируйтесь</h2>
+            <div class="my-4">
+                <a class="btn btn-primary mb-2 d-block mx-auto" style="max-width: 300px;" href="{% url 'login' %}">Login</a>
+                <a class="btn btn-secondary d-block mx-auto" style="max-width: 300px;" href="{% url 'signup' %}">Sign Up</a>
+            </div>
         {% endif %}
     </div>
-    {% if not user.is_authenticated%}
-        <div class="text-center my-4">
-            <a class="btn btn-primary mx-2" href="{% url 'login' %}">Login</a>
-            <a class="btn btn-secondary mx-2" href="{% url 'signup' %}">Sign Up</a>
-        </div>
-    {% endif %}
 {% endblock %}

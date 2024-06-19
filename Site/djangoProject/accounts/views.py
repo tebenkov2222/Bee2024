@@ -6,6 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm
 import string
 import random
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 
 from accounts.forms import SignUpForm
 
@@ -132,19 +133,20 @@ def registration_controller(request):
     return render(request, 'accounts/registration_controller.html', {'form': form, 'controllers': controllers})
 
 
-
 @login_required
 def user_controllers(request):
     user = request.user
     controllers = Controller.objects.filter(user=user)
     data = []
 
-    now = datetime.now()
+    now = timezone.now()  # !!! timezone.now() вместо datetime.now() !!!
     start_time_today = now.replace(hour=4, minute=0, second=0, microsecond=0)
     start_time_yesterday = start_time_today - timedelta(days=1)
 
     for controller in controllers:
         latest_record = Record.objects.filter(controller=controller).order_by('-timestamp').first()
+
+        # Используем timezone-aware datetime объекты
         record_today_4am = Record.objects.filter(controller=controller, timestamp__gte=start_time_today).order_by(
             'timestamp').first()
         record_yesterday_4am = Record.objects.filter(controller=controller, timestamp__gte=start_time_yesterday,
@@ -157,7 +159,7 @@ def user_controllers(request):
         data.append({
             'controller': controller,
             'latest_record': latest_record,
-            'delta_mass': delta_mass if delta_mass is not None else 'Недоступно'
+            'delta_mass': delta_mass if delta_mass is not None else 'Недоступно '
         })
 
     return render(request, 'accounts/user_controllers.html', {'data': data})

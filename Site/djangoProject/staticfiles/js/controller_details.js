@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         labels: labels,
                         datasets: [
                             {
-                                label: '🌡️ Внутр. Темп.',
+                                label: 'Внутренняя Темп.',
                                 data: temperatureData,
                                 borderColor: 'rgba(255, 99, 132, 1)',
                                 backgroundColor: 'rgba(255, 99, 132, 0.2)',
@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                 tension: 0.1
                             },
                             {
-                                label: '🌡️ Внеш. Темп.',
+                                label: 'Внешняя Темп.',
                                 data: outsideTemperatureData,
                                 borderColor: 'rgba(54, 162, 235, 1)',
                                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         labels: labels,
                         datasets: [
                             {
-                                label: '💧 Внутр. Влажн.',
+                                label: 'Внутренняя Влажн.',
                                 data: humidityData,
                                 borderColor: 'rgba(75, 192, 192, 1)',
                                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                 tension: 0.1
                             },
                             {
-                                label: '💧 Внеш. Влажн.',
+                                label: 'Внешняя Влажн.',
                                 data: outsideHumidityData,
                                 borderColor: 'rgba(153, 102, 255, 1)',
                                 backgroundColor: 'rgba(153, 102, 255, 0.2)',
@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: '⚖️ Вес',
+                            label: 'Вес',
                             data: weightData,
                             borderColor: 'rgba(255, 159, 64, 1)',
                             backgroundColor: 'rgba(255, 159, 64, 0.2)',
@@ -246,7 +246,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: '🔋 Напряжение',
+                            label: 'Напряжение 🔋',
                             data: voltageData,
                             borderColor: 'rgba(153, 102, 255, 1)',
                             backgroundColor: 'rgba(153, 102, 255, 0.2)',
@@ -270,7 +270,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: '📶 Сигнал',
+                            label: 'Сигнал 📶',
                             data: signalStrengthData,
                             borderColor: 'rgba(255, 206, 86, 1)',
                             backgroundColor: 'rgba(255, 206, 86, 0.2)',

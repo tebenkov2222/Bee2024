@@ -4,11 +4,15 @@
 
 {% block title %}Login{% endblock %}
 
+{% block main_classes %}
+center-content
+{% endblock %}
+
 {% block content %}
     <div class="container">
         <h2 class="text-center my-4">Login</h2>
         <div class="row justify-content-center">
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-6 col-lg-4">
                 <form method="post">
                     {% csrf_token %}
                     {% if form.non_field_errors %}
@@ -18,11 +22,11 @@
                             {% endfor %}
                         </div>
                     {% endif %}
-                    <div class="form-group">
+                    <div class="form-group text-left">
                         <label for="id_username">Username:</label>
                         {{ form.username }}
                     </div>
-                    <div class="form-group">
+                    <div class="form-group text-left">
                         <label for="id_password">Password:</label>
                         {{ form.password }}
                     </div>

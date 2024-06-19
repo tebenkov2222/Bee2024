@@ -50,21 +50,29 @@
                         </div>
                     </div>
                     <div class="row mb-4">
-                        <div class="col-md-6 chart-container">
-                            <canvas id="weight-chart"></canvas>
+                        <div class="col-12 chart-container">
+                            <div class="chart-scrollable">
+                                <canvas id="weight-chart"></canvas>
+                            </div>
                         </div>
-                        <div class="col-md-6 chart-container">
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-12 chart-container">
                             <div id="weight-change-chart"></div>
                         </div>
                     </div>
                     <div class="row mb-4">
-                        <div class="col-md-12 chart-container">
-                            <canvas id="temperature-chart"></canvas>
+                        <div class="col-12 chart-container">
+                            <div class="chart-scrollable">
+                                <canvas id="temperature-chart"></canvas>
+                            </div>
                         </div>
                     </div>
                     <div class="row mb-4">
-                        <div class="col-md-12 chart-container">
-                            <canvas id="humidity-chart"></canvas>
+                        <div class="col-12 chart-container">
+                            <div class="chart-scrollable">
+                                <canvas id="humidity-chart"></canvas>
+                            </div>
                         </div>
                     </div>
                     <div class="row mb-4">
@@ -88,6 +96,7 @@
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/stock.js"></script>
 <script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script> <!-- Добавлен accessibility.js -->
 
 <!-- Подключение Chart.js для других графиков -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

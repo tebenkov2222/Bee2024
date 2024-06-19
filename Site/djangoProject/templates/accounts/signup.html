@@ -3,14 +3,18 @@
 
 {% block title %}Sign Up{% endblock %}
 
+{% block main_classes %}
+center-content
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <h2 class="text-center my-4">Sign Up</h2>
     <div class="row justify-content-center">
-        <div class="col-12 col-md-6">
+        <div class="col-12 col-md-6 col-lg-4">
             <form method="post" novalidate>
                 {% csrf_token %}
-                <div class="form-group">
+                <div class="form-group text-left">
                     <label for="id_username">Username:</label>
                     <input type="text" name="username" class="form-control" id="id_username" required>
                     {% if form.username.errors %}
@@ -21,7 +25,7 @@
                         </div>
                     {% endif %}
                 </div>
-                <div class="form-group">
+                <div class="form-group text-left">
                     <label for="id_email">Email:</label>
                     <input type="email" name="email" class="form-control" id="id_email" required>
                     {% if form.email.errors %}
@@ -32,7 +36,7 @@
                         </div>
                     {% endif %}
                 </div>
-                <div class="form-group">
+                <div class="form-group text-left">
                     <label for="id_password1">Password:</label>
                     <input type="password" name="password1" class="form-control" id="id_password1" required>
                     {% if form.password1.errors %}
@@ -43,7 +47,7 @@
                         </div>
                     {% endif %}
                 </div>
-                <div class="form-group">
+                <div class="form-group text-left">
                     <label for="id_password2">Password confirmation:</label>
                     <input type="password" name="password2" class="form-control" id="id_password2" required>
                     {% if form.password2.errors %}
