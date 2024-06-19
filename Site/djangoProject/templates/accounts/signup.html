@@ -4,18 +4,66 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <h2 class="text-center my-4">Sign Up</h2>
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-6">
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        {{ form.as_p }}
+<div class="container">
+    <h2 class="text-center my-4">Sign Up</h2>
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_username">Username:</label>
+                    <input type="text" name="username" class="form-control" id="id_username" required>
+                    {% if form.username.errors %}
+                        <div class="alert alert-danger mt-2">
+                            {% for error in form.username.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_email">Email:</label>
+                    <input type="email" name="email" class="form-control" id="id_email" required>
+                    {% if form.email.errors %}
+                        <div class="alert alert-danger mt-2">
+                            {% for error in form.email.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_password1">Password:</label>
+                    <input type="password" name="password1" class="form-control" id="id_password1" required>
+                    {% if form.password1.errors %}
+                        <div class="alert alert-danger mt-2">
+                            {% for error in form.password1.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_password2">Password confirmation:</label>
+                    <input type="password" name="password2" class="form-control" id="id_password2" required>
+                    {% if form.password2.errors %}
+                        <div class="alert alert-danger mt-2">
+                            {% for error in form.password2.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger mt-2">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
-                </form>
-            </div>
+                {% endif %}
+                <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+            </form>
         </div>
     </div>
+</div>
 {% endblock %}

@@ -1,4 +1,4 @@
-name: bee_rabbitmq050524
+version: '3.8'
 
 services:
   rabbitmq:
@@ -14,6 +14,7 @@ services:
       - 7671:5672
     volumes:
       - ./rabbitmq:/var/lib/rabbitmq
+
   postgres:
     image: postgres:15.7
     volumes:
@@ -22,6 +23,7 @@ services:
       POSTGRES_PASSWORD: hhP2CidKeK^Y6
     ports:
       - 7672:5432
+
   pgadmin:
     image: dpage/pgadmin4
     environment:
@@ -31,19 +33,34 @@ services:
       - 7673:80
     volumes:
       - ./pgadmin-data:/var/lib/pgadmin
+
   restapi:
     image: tebenkov2222/bee-restapi:1.0
     volumes:
       - ./.env:/app/.env
     ports:
-      - 7674:5001
+      - 7676:5001
+
   rmq-to-pg:
     image: tebenkov2222/bee-rmq-to-pg:1.1
     volumes:
       - ./.env:/app/.env
+
   django:
-    image: tebenkov2222/bee-django:1.0
+    build:
+      context: ../../djangoProject
+      dockerfile: ../djangoProject/Dockerfile
     volumes:
-      - ./.env:/app/.env
+      - ../../djangoProject/.env:/app/.env
+      - ../../djangoProject/staticfiles:/app/staticfiles
     ports:
       - 7675:8000
+    depends_on:
+      - postgres
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=hhP2CidKeK^Y6
+      - DJANGO_ALLOWED_HOSTS=localhost,192.168.1.64,site.bee.elddir.ru

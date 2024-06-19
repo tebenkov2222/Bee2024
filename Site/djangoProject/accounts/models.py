@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Controller(models.Model):
     imai = models.CharField(max_length=50, null=False, name='imai')
     connection_pass = models.CharField(max_length=128, null=False, default='default_password', name='connection_pass')
@@ -8,6 +9,7 @@ class Controller(models.Model):
 
     class Meta:
         db_table = 'controllers'  # Указываем имя таблицы
+
 
 class Record(models.Model):
     controller = models.ForeignKey(Controller, on_delete=models.CASCADE)

@@ -20,6 +20,8 @@ from django.urls import path, include
 from accounts.views import signup, login_view, add_controller, home, logout_view, registration_controller, \
     user_controllers, controller_details
 from .views import admin_view
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,4 +36,4 @@ urlpatterns = [
     path('user_controllers/', user_controllers, name='user_controllers'),
     path('controller_details/<int:controller_id>/', controller_details, name='controller_details'),
     path('', home, name='home'),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

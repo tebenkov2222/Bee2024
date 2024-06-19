@@ -2,3 +2,8 @@
 /Site/djangoProject/venv
 /Site/djangoProject/accounts/__pycache__
 
+/Site/Docker/Full/pg/data
+/Site/restApi/Docker/RabbitMq
+/Site/Docker/Full/rabbitmq
+/Site/Docker/Full/pgadmin-data
+/Site/djangoProject/staticfiles/admin
